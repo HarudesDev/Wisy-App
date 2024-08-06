@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "925134225529",
+    "project_id": "flutter-firebase-test-4780e",
+    "storage_bucket": "flutter-firebase-test-4780e.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:925134225529:android:84eee670efe0f9b77254a8",
+        "android_client_info": {
+          "package_name": "com.example.wisy"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDlm1if45RaxwskWsPBXLZSa2FYwFUHhgw"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
