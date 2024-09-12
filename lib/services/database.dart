@@ -1,48 +1,44 @@
-import 'dart:io';
-
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:wisy/models/photo.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:wisy/providers/photos_provider.dart';
+import 'package:wisy/services/auth.dart';
 
 class DatabaseService {
-  final String? uid;
-  final FirebaseStorage _storage = FirebaseStorage.instanceFor(
-      bucket: 'gs://flutter-firebase-test-4780e.appspot.com');
-  final FirebaseFirestore _firestore = FirebaseFirestore.instance;
+  final Ref ref;
 
-  DatabaseService({required this.uid});
+  DatabaseService(this.ref);
 
-  Future<String> uploadPhoto(
-      File file, String fileName, Reference storageRef) async {
-    final uploadTask = storageRef.child('$uid/$fileName.jpg').putFile(file);
-    String message = "";
+  Future<void> uploadPhoto(
+      UploadTask uploadTask, String fileName, Reference storageRef) async {
+    final firestore = ref.watch(firestoreProvider);
+    final uid = ref.watch(authServiceProvider).getID();
     await uploadTask.then((upload) async {
       if (upload.state == TaskState.success) {
-        String uploadpath = upload.ref.fullPath;
-        String url = await storageRef.child(uploadpath).getDownloadURL();
+        String uploadPath = upload.ref.fullPath;
+        String url = await storageRef.child(uploadPath).getDownloadURL();
         final photoDocument = Photo.now(url, fileName);
         try {
-          await _firestore
+          await firestore
               .collection('users')
               .doc(uid)
               .collection('photos')
               .doc(photoDocument.id)
-              .set(photoDocument.toFirestore());
-          message = 'Foto guardada';
+              .set(photoDocument.toJson());
         } catch (e) {
-          storageRef.child(uploadpath).delete();
+          storageRef.child(uploadPath).delete();
         }
-      } else {
-        message = 'Error al subir el archivo';
       }
     });
-    return message;
   }
 
   Future<String> deletePhoto(String photoId) async {
     String response = "";
-    final storageRef = _storage.ref().child('$uid/$photoId.jpg');
-    await _firestore
+    final storage = ref.watch(storageProvider);
+    final uid = ref.watch(authServiceProvider).getID();
+    final storageRef = storage.ref().child('$uid/$photoId.jpg');
+    final firestore = ref.watch(firestoreProvider);
+    await firestore
         .collection('users')
         .doc(uid)
         .collection('photos')
@@ -64,3 +60,5 @@ class DatabaseService {
     return response;
   }
 }
+
+final databaseServiceProvider = Provider<DatabaseService>((ref) => DatabaseService(ref));

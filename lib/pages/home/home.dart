@@ -14,12 +14,12 @@ class Home extends ConsumerStatefulWidget {
 }
 
 class _HomeState extends ConsumerState<Home> {
-  final Auth _auth = Auth();
-  final DatabaseService _databaseService = DatabaseService(uid: Auth().getID());
 
   @override
   Widget build(BuildContext context) {
     final photoList = ref.watch(photosProvider);
+    final databaseService = ref.watch(databaseServiceProvider);
+    final authService = ref.watch(authServiceProvider);
     return Scaffold(
       backgroundColor: Colors.brown[200],
       appBar: AppBar(
@@ -29,7 +29,7 @@ class _HomeState extends ConsumerState<Home> {
           TextButton.icon(
             icon: const Icon(Icons.person),
             onPressed: () async {
-              await _auth.signOut();
+              await authService.signOut();
             },
             label: const Text('Cerrar sesión'),
             style: TextButton.styleFrom(
@@ -45,7 +45,7 @@ class _HomeState extends ConsumerState<Home> {
           itemCount: photos.length,
           itemBuilder: (context, index) {
             final photo = photos[index];
-            Timestamp date = photo.timestamp;
+            DateTime date = photo.dateTime;
             return Card(
               margin: const EdgeInsets.fromLTRB(20.0, 6.0, 20.0, 0.0),
               child: Padding(
@@ -62,7 +62,7 @@ class _HomeState extends ConsumerState<Home> {
                       child: Padding(
                         padding: const EdgeInsets.all(8.0),
                         child: Text(
-                          'Foto tomada el: \n ${DateTime.parse(date.toDate().toString()).toString()}',
+                          'Foto tomada el: \n ${date.toString()}',
                           overflow: TextOverflow.ellipsis,
                           maxLines: 2,
                         ),
@@ -70,7 +70,7 @@ class _HomeState extends ConsumerState<Home> {
                     ),
                     IconButton(
                         onPressed: () {
-                          _databaseService.deletePhoto(photo.id).then((value) {
+                          databaseService.deletePhoto(photo.id).then((value) {
                             ScaffoldMessenger.of(context)
                                 .showSnackBar(SnackBar(content: Text(value)));
                           });
@@ -85,7 +85,7 @@ class _HomeState extends ConsumerState<Home> {
             );
           },
         ),
-        error: (error, stack) => Text('Error:$error'),
+        error: (error, stack) => ElevatedButton(onPressed:()=> ref.invalidate(photosProvider), child:const Text("Refrescar")),
         loading: () => const Loading(),
       ),
       bottomNavigationBar: BottomAppBar(

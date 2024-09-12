@@ -1,17 +1,17 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:wisy/services/auth.dart';
 import 'package:wisy/shared/style.dart';
 
-class Register extends StatefulWidget {
+class Register extends ConsumerStatefulWidget {
   const Register({super.key, required this.toggleView});
 
   final Function toggleView;
   @override
-  State<Register> createState() => _RegisterState();
+  ConsumerState<Register> createState() => _RegisterState();
 }
 
-class _RegisterState extends State<Register> {
-  final Auth _auth = Auth();
+class _RegisterState extends ConsumerState<Register> {
   final _formKey = GlobalKey<FormState>();
   bool loading = false;
 
@@ -21,6 +21,8 @@ class _RegisterState extends State<Register> {
 
   @override
   Widget build(BuildContext context) {
+    final authService = ref.watch(authServiceProvider);
+    
     return Scaffold(
       backgroundColor: Colors.brown[200],
       appBar: AppBar(
@@ -81,7 +83,7 @@ class _RegisterState extends State<Register> {
                 onPressed: () async {
                   if (_formKey.currentState!.validate()) {
                     setState(() => loading = true);
-                    dynamic result = await _auth.registerWithEmailAndPassword(
+                    dynamic result = await authService.registerWithEmailAndPassword(
                         email, password);
                     if (result == null) {
                       setState(

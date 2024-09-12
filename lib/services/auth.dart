@@ -1,11 +1,14 @@
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-class Auth {
+class AuthService {
   final FirebaseAuth _firebaseAuth = FirebaseAuth.instance;
   User? _user;
   bool get isAuthenticated => _user != null;
 
-  Auth() {
+  final Ref ref;
+
+  AuthService(this.ref) {
     _user = _firebaseAuth.currentUser;
   }
 
@@ -44,3 +47,5 @@ class Auth {
     return _firebaseAuth.currentUser?.uid;
   }
 }
+
+final authServiceProvider = Provider<AuthService>((ref) => AuthService(ref));

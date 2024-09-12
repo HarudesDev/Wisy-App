@@ -2,25 +2,31 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:wisy/models/photo.dart';
-import 'package:wisy/providers/auth_provider.dart';
+//import 'package:wisy/providers/auth_provider.dart';
 import 'package:wisy/services/auth.dart';
+import 'package:riverpod_annotation/riverpod_annotation.dart';
 
-final photosProvider = StreamProvider.autoDispose<List<Photo>>((ref) {
+part 'photos_provider.g.dart';
+
+@riverpod
+Stream<List<Photo>> photos(PhotosRef ref){
   final storage = ref.watch(firestoreProvider);
-  ref.watch(authProvider);
+  final authService = ref.watch(authServiceProvider);
+  //ref.watch(authProvider);
   return storage
       .collection('users')
-      .doc(Auth().getID())
+      .doc(authService.getID())
       .collection('photos')
       .orderBy('timestamp')
       .withConverter(
           fromFirestore: Photo.fromFirestore,
-          toFirestore: (Photo photo, _) => photo.toFirestore())
+          toFirestore: (Photo photo, _) => photo.toJson())
       .snapshots()
       .map((query) {
     return query.docs.map((doc) => doc.data()).toList();
   });
-});
+  
+}
 
 final firestoreProvider =
     Provider<FirebaseFirestore>((ref) => FirebaseFirestore.instance);

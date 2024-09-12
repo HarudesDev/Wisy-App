@@ -1,20 +1,20 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:wisy/services/auth.dart';
 import 'package:wisy/shared/style.dart';
 
-class Login extends StatefulWidget {
+class Login extends ConsumerStatefulWidget {
   const Login({super.key, required this.toggleView});
 
   final Function toggleView;
 
   @override
-  State<Login> createState() => _LoginState();
+  ConsumerState<Login> createState() => _LoginState();
 }
 
-class _LoginState extends State<Login> {
-  final Auth _auth = Auth();
+class _LoginState extends ConsumerState<Login> {
   final _formKey = GlobalKey<FormState>();
-  bool loading = false;
+  bool loading = false; 
 
   String email = '';
   String password = '';
@@ -22,6 +22,8 @@ class _LoginState extends State<Login> {
 
   @override
   Widget build(BuildContext context) {
+    final authService = ref.watch(authServiceProvider);
+    
     return Scaffold(
       backgroundColor: Colors.brown[200],
       appBar: AppBar(
@@ -86,7 +88,7 @@ class _LoginState extends State<Login> {
                   if (_formKey.currentState!.validate()) {
                     setState(() => loading = true);
                     dynamic result =
-                        await _auth.signInWithEmailAndPassword(email, password);
+                        await authService.signInWithEmailAndPassword(email, password);
                     if (result == null) {
                       setState(() =>
                           error = 'Datos de ingreso inválidos o incorrectos');
