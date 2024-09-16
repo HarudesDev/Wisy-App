@@ -3,7 +3,6 @@ import 'dart:io';
 import 'dart:math';
 
 import 'package:camerawesome/camerawesome_plugin.dart';
-import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:path_provider/path_provider.dart';

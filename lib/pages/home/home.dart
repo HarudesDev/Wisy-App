@@ -1,10 +1,9 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:wisy/services/auth.dart';
 import 'package:wisy/services/database.dart';
 import 'package:wisy/shared/loading.dart';
 import 'package:wisy/providers/photos_provider.dart';
+import 'package:wisy/repositories/firebase_auth_repository.dart';
 
 class Home extends ConsumerStatefulWidget {
   const Home({super.key});
@@ -19,7 +18,7 @@ class _HomeState extends ConsumerState<Home> {
   Widget build(BuildContext context) {
     final photoList = ref.watch(photosProvider);
     final databaseService = ref.watch(databaseServiceProvider);
-    final authService = ref.watch(authServiceProvider);
+    final authService = ref.watch(firebaseAuthRepositoryProvider);
     return Scaffold(
       backgroundColor: Colors.brown[200],
       appBar: AppBar(

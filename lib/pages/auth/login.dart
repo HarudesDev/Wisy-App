@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:wisy/services/auth.dart';
+import 'package:wisy/repositories/firebase_auth_repository.dart';
 import 'package:wisy/shared/style.dart';
 
 class Login extends ConsumerStatefulWidget {
@@ -22,7 +22,7 @@ class _LoginState extends ConsumerState<Login> {
 
   @override
   Widget build(BuildContext context) {
-    final authService = ref.watch(authServiceProvider);
+    final authService = ref.watch(firebaseAuthRepositoryProvider);
     
     return Scaffold(
       backgroundColor: Colors.brown[200],

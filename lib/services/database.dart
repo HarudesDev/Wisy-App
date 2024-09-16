@@ -2,7 +2,7 @@ import 'package:firebase_storage/firebase_storage.dart';
 import 'package:wisy/models/photo.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:wisy/providers/photos_provider.dart';
-import 'package:wisy/services/auth.dart';
+import 'package:wisy/repositories/firebase_auth_repository.dart';
 
 class DatabaseService {
   final Ref ref;
@@ -12,7 +12,7 @@ class DatabaseService {
   Future<void> uploadPhoto(
       UploadTask uploadTask, String fileName, Reference storageRef) async {
     final firestore = ref.watch(firestoreProvider);
-    final uid = ref.watch(authServiceProvider).getID();
+    final uid = ref.watch(firebaseAuthRepositoryProvider).getID();
     await uploadTask.then((upload) async {
       if (upload.state == TaskState.success) {
         String uploadPath = upload.ref.fullPath;
@@ -35,7 +35,7 @@ class DatabaseService {
   Future<String> deletePhoto(String photoId) async {
     String response = "";
     final storage = ref.watch(storageProvider);
-    final uid = ref.watch(authServiceProvider).getID();
+    final uid = ref.watch(firebaseAuthRepositoryProvider).getID();
     final storageRef = storage.ref().child('$uid/$photoId.jpg');
     final firestore = ref.watch(firestoreProvider);
     await firestore
