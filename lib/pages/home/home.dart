@@ -1,6 +1,6 @@
+import 'package:extended_image/extended_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:wisy/services/database.dart';
 import 'package:wisy/shared/loading.dart';
 import 'package:wisy/providers/photos_provider.dart';
 import 'package:wisy/repositories/firebase_auth_repository.dart';
@@ -13,11 +13,9 @@ class Home extends ConsumerStatefulWidget {
 }
 
 class _HomeState extends ConsumerState<Home> {
-
   @override
   Widget build(BuildContext context) {
     final photoList = ref.watch(photosProvider);
-    final databaseService = ref.watch(databaseServiceProvider);
     final authService = ref.watch(firebaseAuthRepositoryProvider);
     return Scaffold(
       backgroundColor: Colors.brown[200],
@@ -51,11 +49,40 @@ class _HomeState extends ConsumerState<Home> {
                 padding: const EdgeInsets.all(8.0),
                 child: Row(
                   children: [
-                    FadeInImage.assetNetwork(
-                      placeholder: 'assets/images/loading.png',
-                      image: photo.url,
-                      height: 200.0,
-                      width: 100.0,
+                    InkWell(
+                      onTap: () {
+                        showDialog(
+                            context: context,
+                            builder: (BuildContext context) {
+                              return Dialog(
+                                child: Container(
+                                  child: Column(
+                                    mainAxisSize: MainAxisSize.min,
+                                    children: [
+                                      ExtendedImage.network(
+                                        photo.url,
+                                        fit: BoxFit.cover,
+                                        mode: ExtendedImageMode.gesture,
+                                        initGestureConfigHandler: (state) {
+                                          return GestureConfig(
+                                            minScale: 1,
+                                            animationMinScale: 1,
+                                            inPageView: true,
+                                          );
+                                        },
+                                      )
+                                    ],
+                                  ),
+                                ),
+                              );
+                            });
+                      },
+                      child: FadeInImage.assetNetwork(
+                        placeholder: 'assets/images/loading.png',
+                        image: photo.url,
+                        height: 80.0,
+                        width: 80.0,
+                      ),
                     ),
                     Expanded(
                       child: Padding(
@@ -69,10 +96,10 @@ class _HomeState extends ConsumerState<Home> {
                     ),
                     IconButton(
                         onPressed: () {
-                          databaseService.deletePhoto(photo.id).then((value) {
+                          /*databaseService.deletePhoto(photo.id).then((value) {
                             ScaffoldMessenger.of(context)
                                 .showSnackBar(SnackBar(content: Text(value)));
-                          });
+                          });*/
                         },
                         icon: const Icon(
                           Icons.delete,
@@ -84,7 +111,11 @@ class _HomeState extends ConsumerState<Home> {
             );
           },
         ),
-        error: (error, stack) => ElevatedButton(onPressed:()=> ref.invalidate(photosProvider), child:const Text("Refrescar")),
+        error: (error, stack) => ElevatedButton(
+            onPressed: () {
+              ref.invalidate(photosProvider);
+            },
+            child: const Text("Refrescar")),
         loading: () => const Loading(),
       ),
       bottomNavigationBar: BottomAppBar(

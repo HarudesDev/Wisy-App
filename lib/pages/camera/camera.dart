@@ -3,11 +3,14 @@ import 'dart:io';
 import 'dart:math';
 
 import 'package:camerawesome/camerawesome_plugin.dart';
+import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:path_provider/path_provider.dart';
-import 'package:wisy/providers/photos_provider.dart';
-import 'package:wisy/services/database.dart';
+import 'package:wisy/models/photo.dart';
+import 'package:wisy/repositories/firebase_firestore_repository.dart';
+import 'package:wisy/repositories/firebase_storage_repository.dart';
+import 'package:wisy/repositories/firebase_auth_repository.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 part 'camera.g.dart';
@@ -20,23 +23,8 @@ class Camera extends ConsumerStatefulWidget {
 }
 
 class _Camera2State extends ConsumerState<Camera> {
-
-  Future<String> getPath() async {
-    Directory localPath = await getTemporaryDirectory();
-    return '${localPath.path}/${generateFileName()}';
-  }
-
-  String generateFileName() {
-    const int len = 25;
-    Random r = Random();
-    const chars =
-        'AaBbCcDdEeFfGgHhIiJjKkLlMmNnOoPpQqRrSsTtUuVvWwXxYyZz1234567890';
-    return '${String.fromCharCodes(Iterable.generate(len, (_) => chars.codeUnitAt(r.nextInt(chars.length))))}.jpg';
-  }
-
   @override
   Widget build(BuildContext context) {
-
     ref.listen<AsyncValue<void>>(
       cameraControllerProvider,
       (_, state) => state.whenOrNull(
@@ -46,7 +34,7 @@ class _Camera2State extends ConsumerState<Camera> {
             SnackBar(content: Text(error.toString())),
           );
         },
-        data:(data) {
+        data: (data) {
           ScaffoldMessenger.of(context).showSnackBar(
             const SnackBar(content: Text("Foto guardada exitosamente")),
           );
@@ -61,12 +49,15 @@ class _Camera2State extends ConsumerState<Camera> {
         children: [
           CameraAwesomeBuilder.awesome(
             saveConfig: SaveConfig.photo(
-              pathBuilder: () => getPath(),
+              pathBuilder: () =>
+                  ref.read(cameraControllerProvider.notifier).getPath(),
             ),
             enablePhysicalButton: true,
             aspectRatio: CameraAspectRatios.ratio_16_9,
             previewFit: CameraPreviewFit.fitWidth,
-            onMediaTap: (mediaCapture) => ref.read(cameraControllerProvider.notifier).uploadPhoto(mediaCapture),
+            onMediaTap: (mediaCapture) => ref
+                .read(cameraControllerProvider.notifier)
+                .uploadPhoto(mediaCapture),
           ),
           if (state.isLoading)
             const Opacity(
@@ -83,31 +74,54 @@ class _Camera2State extends ConsumerState<Camera> {
   }
 }
 
-@riverpod
-class CameraController extends _$CameraController{
+@Riverpod(keepAlive: true)
+class CameraController extends _$CameraController {
   @override
-  FutureOr<void> build(){
+  FutureOr<void> build() {}
 
+  Future<String> getPath() async {
+    Directory localPath = await getTemporaryDirectory();
+    return '${localPath.path}/${generateFileName()}';
+  }
+
+  String generateFileName() {
+    const int len = 25;
+    Random r = Random();
+    const chars =
+        'AaBbCcDdEeFfGgHhIiJjKkLlMmNnOoPpQqRrSsTtUuVvWwXxYyZz1234567890';
+    return '${String.fromCharCodes(Iterable.generate(len, (_) => chars.codeUnitAt(r.nextInt(chars.length))))}.jpg';
   }
 
   void uploadPhoto(MediaCapture mediaCapture) async {
-    final storageRef = ref.read(storageProvider).ref();
-    final databaseService = ref.watch(databaseServiceProvider);
-    String path = mediaCapture.filePath;
-    File file = File(mediaCapture.filePath);
-    String fileName =
+    final firebaseStorage = ref.read(firebaseStorageRepository);
+    final firebaseFirestore = ref.read(firebaseFirestoreRepository);
+    final firebaseAuth = ref.read(firebaseAuthRepositoryProvider);
+    final path = mediaCapture.filePath;
+    final file = File(mediaCapture.filePath);
+    final fileName =
         path.substring(path.lastIndexOf('/') + 1, path.lastIndexOf('.') - 1);
+    final uid = firebaseAuth.getID()!;
 
     state = const AsyncLoading();
 
-    final uploadTask = storageRef.child('Auth().getID()/$fileName.jpg').putFile(file);
+    final uploadTask =
+        await firebaseStorage.uploadPhotoToStorage(uid, fileName, file);
+
+    state = await AsyncValue.guard(() => uploadTask.then((upload) async {
+          if (upload.state == TaskState.success) {
+            String url = await upload.ref.getDownloadURL();
+            final photo = Photo.now(url, fileName);
+            await firebaseFirestore.uploadPhotoToFirestore(uid, photo);
+          }
+        }));
+
     /*uploadTask.snapshotEvents.listen((event) { 
       setState(() {
         _progress = event.bytesTransferred.toDouble()/event.totalBytes.toDouble();
       });
     });*/
     //final message =
-    state = await AsyncValue.guard(() => databaseService.uploadPhoto(uploadTask, fileName, storageRef)); 
+    //state = await AsyncValue.guard(() => databaseService.uploadPhoto(uploadTask, fileName, storageRef));
     /*if (context.mounted) {
     ScaffoldMessenger.of(context)
         .showSnackBar(SnackBar(content: Text(message)));
