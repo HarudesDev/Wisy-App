@@ -2,8 +2,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:wisy/providers/auth_provider.dart';
 
-class FirebaseAuthRepository{
-
+class FirebaseAuthRepository {
   final Ref ref;
 
   FirebaseAuthRepository(this.ref);
@@ -18,7 +17,7 @@ class FirebaseAuthRepository{
       return null;
     }
   }
-  
+
   Future registerWithEmailAndPassword(String email, String password) async {
     final firebaseAuth = ref.watch(firebaseAuthProvider);
     try {
@@ -28,7 +27,7 @@ class FirebaseAuthRepository{
       return null;
     }
   }
-  
+
   Future signOut() async {
     final firebaseAuth = ref.watch(firebaseAuthProvider);
     try {
@@ -38,9 +37,8 @@ class FirebaseAuthRepository{
     }
   }
 
-  
-  String? getID()=> ref.watch(firebaseAuthProvider).currentUser?.uid;
-  
+  String? getID() => ref.watch(firebaseAuthProvider).currentUser?.uid;
 }
 
-final firebaseAuthRepositoryProvider = Provider<FirebaseAuthRepository>((ref) => FirebaseAuthRepository(ref));
+final firebaseAuthRepositoryProvider =
+    Provider<FirebaseAuthRepository>((ref) => FirebaseAuthRepository(ref));
