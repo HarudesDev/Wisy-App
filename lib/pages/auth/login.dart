@@ -1,7 +1,12 @@
+import 'dart:developer';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:wisy/repositories/firebase_auth_repository.dart';
 import 'package:wisy/shared/style.dart';
+import 'package:riverpod_annotation/riverpod_annotation.dart';
+
+part 'login.g.dart';
 
 class Login extends ConsumerStatefulWidget {
   const Login({super.key, required this.toggleView});
@@ -14,16 +19,34 @@ class Login extends ConsumerStatefulWidget {
 
 class _LoginState extends ConsumerState<Login> {
   final _formKey = GlobalKey<FormState>();
-  bool loading = false; 
 
   String email = '';
   String password = '';
-  String error = '';
+  bool _visiblePassword = false;
 
   @override
   Widget build(BuildContext context) {
-    final authService = ref.watch(firebaseAuthRepositoryProvider);
-    
+    ref.listen<AsyncValue<dynamic>>(
+      loginControllerProvider,
+      (_, state) => state.whenOrNull(
+        error: (error, stackTrace) {
+          // show snackbar if an error occurred
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text(error.toString())),
+          );
+        },
+        data: (data) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+                content: data != null
+                    ? const Text("Ingreso Exitoso")
+                    : const Text("Datos de inicio de sesión incorrectos")),
+          );
+        },
+      ),
+    );
+
+    final AsyncValue<void> state = ref.watch(loginControllerProvider);
     return Scaffold(
       backgroundColor: Colors.brown[200],
       appBar: AppBar(
@@ -61,12 +84,21 @@ class _LoginState extends ConsumerState<Login> {
               ),
               const SizedBox(height: 20.0),
               TextFormField(
-                decoration:
-                    textInputDecoration.copyWith(hintText: 'contraseña'),
+                decoration: textInputDecoration.copyWith(
+                    hintText: 'contraseña',
+                    suffixIcon: IconButton(
+                        onPressed: () {
+                          setState(() {
+                            _visiblePassword = !_visiblePassword;
+                          });
+                        },
+                        icon: Icon(_visiblePassword
+                            ? Icons.visibility_off
+                            : Icons.visibility))),
                 validator: (value) => value!.length < 6
                     ? 'Ingrese una contraseña de más de 6 caracteres'
                     : null,
-                obscureText: true,
+                obscureText: !_visiblePassword,
                 onChanged: (value) {
                   setState(() {
                     password = value;
@@ -78,21 +110,19 @@ class _LoginState extends ConsumerState<Login> {
                 style: ButtonStyle(
                   backgroundColor: MaterialStatePropertyAll(Colors.pink[400]),
                 ),
-                child: const Text(
-                  'Sign in',
-                  style: TextStyle(
-                    color: Colors.white,
-                  ),
-                ),
+                child: state.isLoading
+                    ? const CircularProgressIndicator()
+                    : const Text(
+                        'Ingresar',
+                        style: TextStyle(
+                          color: Colors.white,
+                        ),
+                      ),
                 onPressed: () async {
                   if (_formKey.currentState!.validate()) {
-                    setState(() => loading = true);
-                    dynamic result =
-                        await authService.signInWithEmailAndPassword(email, password);
-                    if (result == null) {
-                      setState(() =>
-                          error = 'Datos de ingreso inválidos o incorrectos');
-                    }
+                    ref
+                        .read(loginControllerProvider.notifier)
+                        .signInWithEmailAndPassword(email, password);
                   }
                 },
               ),
@@ -100,7 +130,7 @@ class _LoginState extends ConsumerState<Login> {
                 height: 12.0,
               ),
               Text(
-                error,
+                state.error != null ? state.error.toString() : "",
                 style: const TextStyle(
                   color: Colors.red,
                   fontSize: 14.0,
@@ -111,5 +141,22 @@ class _LoginState extends ConsumerState<Login> {
         ),
       ),
     );
+  }
+}
+
+@riverpod
+class LoginController extends _$LoginController {
+  @override
+  FutureOr<dynamic> build() {
+    return null;
+  }
+
+  Future<void> signInWithEmailAndPassword(String email, String password) async {
+    final authRepository = ref.read(firebaseAuthRepositoryProvider);
+
+    state = const AsyncLoading();
+
+    state = await AsyncValue.guard(
+        () => authRepository.signInWithEmailAndPassword(email, password));
   }
 }

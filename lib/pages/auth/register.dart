@@ -22,7 +22,7 @@ class _RegisterState extends ConsumerState<Register> {
   @override
   Widget build(BuildContext context) {
     final authService = ref.watch(firebaseAuthRepositoryProvider);
-    
+
     return Scaffold(
       backgroundColor: Colors.brown[200],
       appBar: AppBar(
@@ -83,8 +83,8 @@ class _RegisterState extends ConsumerState<Register> {
                 onPressed: () async {
                   if (_formKey.currentState!.validate()) {
                     setState(() => loading = true);
-                    dynamic result = await authService.registerWithEmailAndPassword(
-                        email, password);
+                    dynamic result = await authService
+                        .registerWithEmailAndPassword(email, password);
                     if (result == null) {
                       setState(
                           () => error = 'invalid or incorrect sign in data');
