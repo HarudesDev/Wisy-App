@@ -109,7 +109,7 @@ class CameraController extends _$CameraController {
 
     state = await AsyncValue.guard(() => uploadTask.then((upload) async {
           if (upload.state == TaskState.success) {
-            String url = await upload.ref.getDownloadURL();
+            final url = await upload.ref.getDownloadURL();
             final photo = Photo.now(url, fileName);
             await firebaseFirestore.uploadPhotoToFirestore(uid, photo);
           }

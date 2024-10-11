@@ -11,7 +11,7 @@ class CameraPage extends StatelessWidget {
       appBar: AppBar(
         backgroundColor: Colors.brown,
       ),
-      body: Camera(),
+      body: const Camera(),
     );
   }
 }

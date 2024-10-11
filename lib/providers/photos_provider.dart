@@ -1,5 +1,4 @@
 import 'package:wisy/models/photo.dart';
-//import 'package:wisy/providers/auth_provider.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:wisy/repositories/firebase_auth_repository.dart';
 import 'package:wisy/repositories/firebase_firestore_repository.dart';

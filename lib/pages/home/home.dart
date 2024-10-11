@@ -55,24 +55,22 @@ class _HomeState extends ConsumerState<Home> {
                             context: context,
                             builder: (BuildContext context) {
                               return Dialog(
-                                child: Container(
-                                  child: Column(
-                                    mainAxisSize: MainAxisSize.min,
-                                    children: [
-                                      ExtendedImage.network(
-                                        photo.url,
-                                        fit: BoxFit.cover,
-                                        mode: ExtendedImageMode.gesture,
-                                        initGestureConfigHandler: (state) {
-                                          return GestureConfig(
-                                            minScale: 1,
-                                            animationMinScale: 1,
-                                            inPageView: true,
-                                          );
-                                        },
-                                      )
-                                    ],
-                                  ),
+                                child: Column(
+                                  mainAxisSize: MainAxisSize.min,
+                                  children: [
+                                    ExtendedImage.network(
+                                      photo.url,
+                                      fit: BoxFit.cover,
+                                      mode: ExtendedImageMode.gesture,
+                                      initGestureConfigHandler: (state) {
+                                        return GestureConfig(
+                                          minScale: 1,
+                                          animationMinScale: 1,
+                                          inPageView: true,
+                                        );
+                                      },
+                                    )
+                                  ],
                                 ),
                               );
                             });
