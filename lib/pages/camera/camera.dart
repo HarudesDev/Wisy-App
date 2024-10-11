@@ -12,6 +12,7 @@ import 'package:wisy/repositories/firebase_firestore_repository.dart';
 import 'package:wisy/repositories/firebase_storage_repository.dart';
 import 'package:wisy/repositories/firebase_auth_repository.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
+import 'package:wisy/shared/globals.dart';
 
 part 'camera.g.dart';
 
@@ -112,6 +113,9 @@ class CameraController extends _$CameraController {
             final url = await upload.ref.getDownloadURL();
             final photo = Photo.now(url, fileName);
             await firebaseFirestore.uploadPhotoToFirestore(uid, photo);
+            const SnackBar snackBar =
+                SnackBar(content: Text("Foto subida exitosamente"));
+            snackbarKey.currentState?.showSnackBar(snackBar);
           }
         }));
 

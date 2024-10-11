@@ -24,7 +24,7 @@ class _LoginState extends ConsumerState<Login> {
 
   @override
   Widget build(BuildContext context) {
-    ref.listen<AsyncValue<dynamic>>(
+    ref.listen<AsyncValue<void>>(
       loginControllerProvider,
       (_, state) => state.whenOrNull(
         error: (error, stackTrace) {
@@ -35,10 +35,7 @@ class _LoginState extends ConsumerState<Login> {
         },
         data: (data) {
           ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-                content: data != null
-                    ? const Text("Ingreso Exitoso")
-                    : const Text("Datos de inicio de sesión incorrectos")),
+            const SnackBar(content: Text("Ingreso Exitoso")),
           );
         },
       ),
@@ -145,7 +142,7 @@ class _LoginState extends ConsumerState<Login> {
 @riverpod
 class LoginController extends _$LoginController {
   @override
-  FutureOr<dynamic> build() {
+  FutureOr<void> build() {
     return null;
   }
 

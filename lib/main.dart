@@ -5,6 +5,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:wisy/pages/camera/camera_page.dart';
 import 'package:wisy/pages/home/home.dart';
 import 'package:wisy/pages/wrapper.dart';
+import 'package:wisy/shared/globals.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -23,6 +24,7 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
+      scaffoldMessengerKey: snackbarKey,
       home: const Wrapper(),
       routes: {
         '/home': (context) => const Home(),
