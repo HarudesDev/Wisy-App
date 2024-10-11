@@ -53,7 +53,7 @@ class _HomeState extends ConsumerState<Home> {
                       onTap: () {
                         showDialog(
                             context: context,
-                            builder: (BuildContext context) {
+                            builder: (_) {
                               return Dialog(
                                 child: Column(
                                   mainAxisSize: MainAxisSize.min,
@@ -62,7 +62,7 @@ class _HomeState extends ConsumerState<Home> {
                                       photo.url,
                                       fit: BoxFit.cover,
                                       mode: ExtendedImageMode.gesture,
-                                      initGestureConfigHandler: (state) {
+                                      initGestureConfigHandler: (_) {
                                         return GestureConfig(
                                           minScale: 1,
                                           animationMinScale: 1,
@@ -109,11 +109,13 @@ class _HomeState extends ConsumerState<Home> {
             );
           },
         ),
-        error: (error, stack) => ElevatedButton(
-            onPressed: () {
-              ref.invalidate(photosProvider);
-            },
-            child: const Text("Refrescar")),
+        error: (error, stack) => Center(
+          child: ElevatedButton(
+              onPressed: () {
+                ref.invalidate(photosProvider);
+              },
+              child: const Text("Refrescar")),
+        ),
         loading: () => const Loading(),
       ),
       bottomNavigationBar: BottomAppBar(

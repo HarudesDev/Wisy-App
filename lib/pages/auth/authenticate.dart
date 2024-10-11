@@ -1,5 +1,6 @@
-import 'package:wisy/pages/auth/register.dart';
-import 'package:wisy/pages/auth/login.dart';
+import 'login.dart';
+import 'register.dart';
+
 import 'package:flutter/material.dart';
 
 class Authenticate extends StatefulWidget {

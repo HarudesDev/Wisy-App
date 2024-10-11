@@ -15,7 +15,7 @@ class Wrapper extends ConsumerWidget {
         data: (user) {
           return user != null ? const Home() : const Authenticate();
         },
-        error: (error, stack) => Text('Error:$error'),
+        error: (error, _) => Text('Error:$error'),
         loading: () => const Loading());
   }
 }

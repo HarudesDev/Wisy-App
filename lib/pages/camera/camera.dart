@@ -7,11 +7,11 @@ import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:path_provider/path_provider.dart';
+import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:wisy/models/photo.dart';
 import 'package:wisy/repositories/firebase_firestore_repository.dart';
 import 'package:wisy/repositories/firebase_storage_repository.dart';
 import 'package:wisy/repositories/firebase_auth_repository.dart';
-import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:wisy/shared/globals.dart';
 
 part 'camera.g.dart';
@@ -30,7 +30,6 @@ class _Camera2State extends ConsumerState<Camera> {
       cameraControllerProvider,
       (_, state) => state.whenOrNull(
         error: (error, stackTrace) {
-          // show snackbar if an error occurred
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(content: Text(error.toString())),
           );
@@ -87,7 +86,7 @@ class CameraController extends _$CameraController {
 
   String generateFileName() {
     const int len = 25;
-    Random r = Random();
+    final r = Random();
     const chars =
         'AaBbCcDdEeFfGgHhIiJjKkLlMmNnOoPpQqRrSsTtUuVvWwXxYyZz1234567890';
     return '${String.fromCharCodes(Iterable.generate(len, (_) => chars.codeUnitAt(r.nextInt(chars.length))))}.jpg';
@@ -101,7 +100,7 @@ class CameraController extends _$CameraController {
     final file = File(mediaCapture.filePath);
     final fileName =
         path.substring(path.lastIndexOf('/') + 1, path.lastIndexOf('.') - 1);
-    final uid = firebaseAuth.getID()!;
+    final uid = firebaseAuth.getID()!; //Pendiente de revisión
 
     state = const AsyncLoading();
 
@@ -118,17 +117,5 @@ class CameraController extends _$CameraController {
             snackbarKey.currentState?.showSnackBar(snackBar);
           }
         }));
-
-    /*uploadTask.snapshotEvents.listen((event) { 
-      setState(() {
-        _progress = event.bytesTransferred.toDouble()/event.totalBytes.toDouble();
-      });
-    });*/
-    //final message =
-    //state = await AsyncValue.guard(() => databaseService.uploadPhoto(uploadTask, fileName, storageRef));
-    /*if (context.mounted) {
-    ScaffoldMessenger.of(context)
-        .showSnackBar(SnackBar(content: Text(message)));
-    }*/
   }
 }

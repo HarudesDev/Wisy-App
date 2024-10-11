@@ -27,8 +27,7 @@ class _LoginState extends ConsumerState<Login> {
     ref.listen<AsyncValue<void>>(
       loginControllerProvider,
       (_, state) => state.whenOrNull(
-        error: (error, stackTrace) {
-          // show snackbar if an error occurred
+        error: (error, _) {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(content: Text(error.toString())),
           );
