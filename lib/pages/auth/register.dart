@@ -24,9 +24,9 @@ class _RegisterState extends ConsumerState<Register> {
     final authService = ref.watch(firebaseAuthRepositoryProvider);
 
     return Scaffold(
-      backgroundColor: Colors.brown[200],
+      backgroundColor: backgroundColor,
       appBar: AppBar(
-        backgroundColor: Colors.brown,
+        backgroundColor: primaryColor,
         title: const Text('Register'),
         actions: [
           TextButton.icon(

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:wisy/pages/camera/camera.dart';
+import 'package:wisy/shared/style.dart';
 
 class CameraPage extends StatelessWidget {
   const CameraPage({super.key});
@@ -7,9 +8,9 @@ class CameraPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.brown[200],
+      backgroundColor: backgroundColor,
       appBar: AppBar(
-        backgroundColor: Colors.brown,
+        backgroundColor: primaryColor,
       ),
       body: const Camera(),
     );

@@ -1,8 +1,11 @@
+import 'dart:developer';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:wisy/repositories/firebase_auth_repository.dart';
 import 'package:wisy/shared/style.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
+import 'package:sign_in_button/sign_in_button.dart';
 
 part 'login.g.dart';
 
@@ -42,10 +45,13 @@ class _LoginState extends ConsumerState<Login> {
 
     final AsyncValue<void> state = ref.watch(loginControllerProvider);
     return Scaffold(
-      backgroundColor: Colors.brown[200],
+      backgroundColor: primaryColor,
       appBar: AppBar(
-        backgroundColor: Colors.brown,
-        title: const Text('Iniciar Sesión'),
+        backgroundColor: primaryColor,
+        title: const Text(
+          'Iniciar Sesión',
+          style: TextStyle(color: Colors.white),
+        ),
         actions: [
           TextButton.icon(
             icon: const Icon(Icons.person),
@@ -54,85 +60,131 @@ class _LoginState extends ConsumerState<Login> {
               widget.toggleView();
             },
             style: TextButton.styleFrom(
-              foregroundColor: Colors.black,
+              foregroundColor: Colors.white,
             ),
           ),
         ],
       ),
-      body: Container(
-        padding: const EdgeInsets.symmetric(vertical: 20.0, horizontal: 50.0),
-        child: Form(
-          key: _formKey,
-          child: Column(
-            children: [
-              const SizedBox(height: 20.0),
-              TextFormField(
-                decoration: textInputDecoration.copyWith(hintText: 'email'),
-                validator: (value) =>
-                    value!.isEmpty ? 'Ingrese un email' : null,
-                onChanged: (value) {
-                  setState(() {
-                    email = value;
-                  });
-                },
+      body: Column(
+        mainAxisSize: MainAxisSize.max,
+        children: [
+          const Text(
+            "Wisy",
+            style: TextStyle(
+              fontSize: 50,
+              color: Colors.white,
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+          Container(
+            padding: const EdgeInsets.symmetric(
+              vertical: 20.0,
+              horizontal: 50.0,
+            ),
+            decoration: const BoxDecoration(
+              color: backgroundColor,
+              borderRadius: BorderRadius.only(
+                topRight: Radius.circular(20),
+                topLeft: Radius.circular(20),
               ),
-              const SizedBox(height: 20.0),
-              TextFormField(
-                decoration: textInputDecoration.copyWith(
-                    hintText: 'contraseña',
-                    suffixIcon: IconButton(
-                        onPressed: () {
+            ),
+            child: Form(
+              key: _formKey,
+              child: Column(
+                children: [
+                  const SizedBox(height: 20.0),
+                  Column(
+                    children: [
+                      TextFormField(
+                        decoration:
+                            textInputDecoration.copyWith(hintText: 'email'),
+                        validator: (value) =>
+                            value!.isEmpty ? 'Ingrese un email' : null,
+                        onChanged: (value) {
                           setState(() {
-                            _visiblePassword = !_visiblePassword;
+                            email = value;
                           });
                         },
-                        icon: Icon(_visiblePassword
-                            ? Icons.visibility_off
-                            : Icons.visibility))),
-                validator: (value) => value!.length < 6
-                    ? 'Ingrese una contraseña de más de 6 caracteres'
-                    : null,
-                obscureText: !_visiblePassword,
-                onChanged: (value) {
-                  setState(() {
-                    password = value;
-                  });
-                },
-              ),
-              const SizedBox(height: 20.0),
-              ElevatedButton(
-                style: ButtonStyle(
-                  backgroundColor: MaterialStatePropertyAll(Colors.pink[400]),
-                ),
-                child: state.isLoading
-                    ? const CircularProgressIndicator()
-                    : const Text(
-                        'Ingresar',
+                      ),
+                      const SizedBox(height: 20.0),
+                      TextFormField(
+                        decoration: textInputDecoration.copyWith(
+                          hintText: 'contraseña',
+                          suffixIcon: IconButton(
+                            onPressed: () {
+                              setState(() {
+                                _visiblePassword = !_visiblePassword;
+                              });
+                            },
+                            icon: Icon(_visiblePassword
+                                ? Icons.visibility_off
+                                : Icons.visibility),
+                          ),
+                        ),
+                        validator: (value) => value!.length < 6
+                            ? 'Ingrese una contraseña de más de 6 caracteres'
+                            : null,
+                        obscureText: !_visiblePassword,
+                        onChanged: (value) {
+                          setState(() {
+                            password = value;
+                          });
+                        },
+                      ),
+                      const SizedBox(height: 20.0),
+                      ElevatedButton(
+                        style: const ButtonStyle(
+                          backgroundColor:
+                              MaterialStatePropertyAll(buttonColor),
+                          minimumSize: MaterialStatePropertyAll(Size(350, 50)),
+                        ),
+                        child: state.isLoading
+                            ? const CircularProgressIndicator()
+                            : const Text(
+                                'Ingresar',
+                                style: TextStyle(
+                                  color: Colors.white,
+                                ),
+                              ),
+                        onPressed: () async {
+                          if (_formKey.currentState!.validate()) {
+                            ref
+                                .read(loginControllerProvider.notifier)
+                                .signInWithEmailAndPassword(email, password);
+                          }
+                        },
+                      ),
+                      const SizedBox(
+                        height: 6.0,
+                      ),
+                      const Text(
+                        "Olvidaste tu contraseña?",
                         style: TextStyle(
-                          color: Colors.white,
+                          color: Color.fromARGB(255, 94, 94, 94),
                         ),
                       ),
-                onPressed: () async {
-                  if (_formKey.currentState!.validate()) {
-                    ref
-                        .read(loginControllerProvider.notifier)
-                        .signInWithEmailAndPassword(email, password);
-                  }
-                },
+                      const SizedBox(
+                        height: 12.0,
+                      ),
+                      SignInButton(
+                        Buttons.google,
+                        text: "Ingresar con Google",
+                        onPressed: () async {},
+                      ),
+                      Text(
+                        state.error != null ? state.error.toString() : "",
+                        style: const TextStyle(
+                          color: Colors.red,
+                          fontSize: 14.0,
+                        ),
+                      ),
+                    ],
+                  ),
+                ],
               ),
-              const SizedBox(
-                height: 12.0,
-              ),
-              Text(
-                state.error != null ? state.error.toString() : "",
-                style: const TextStyle(
-                  color: Colors.red,
-                  fontSize: 14.0,
-                ),
-              ),
-            ],
+            ),
           ),
-        ),
+        ],
       ),
     );
   }
@@ -153,4 +205,12 @@ class LoginController extends _$LoginController {
     state = await AsyncValue.guard(
         () => authRepository.signInWithEmailAndPassword(email, password));
   }
+
+  /*Future<void> signInWithGoogle() async {
+    final authRepository = ref.read(firebaseAuthRepositoryProvider);
+
+    final userCredential = await authRepository.signInWithGoogle();
+
+    log(userCredential);
+  }*/
 }

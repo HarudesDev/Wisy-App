@@ -4,6 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:wisy/shared/loading.dart';
 import 'package:wisy/providers/photos_provider.dart';
 import 'package:wisy/repositories/firebase_auth_repository.dart';
+import 'package:wisy/shared/style.dart';
 
 class Home extends ConsumerStatefulWidget {
   const Home({super.key});
@@ -18,10 +19,13 @@ class _HomeState extends ConsumerState<Home> {
     final photoList = ref.watch(photosProvider);
     final authService = ref.watch(firebaseAuthRepositoryProvider);
     return Scaffold(
-      backgroundColor: Colors.brown[200],
+      backgroundColor: backgroundColor,
       appBar: AppBar(
-        backgroundColor: Colors.brown,
-        title: const Text('Inicio'),
+        backgroundColor: primaryColor,
+        title: const Text(
+          'Inicio',
+          style: TextStyle(color: Colors.white),
+        ),
         actions: [
           TextButton.icon(
             icon: const Icon(Icons.person),
@@ -30,7 +34,7 @@ class _HomeState extends ConsumerState<Home> {
             },
             label: const Text('Cerrar sesión'),
             style: TextButton.styleFrom(
-              foregroundColor: Colors.black,
+              foregroundColor: Colors.white,
             ),
           ),
         ],
@@ -119,7 +123,7 @@ class _HomeState extends ConsumerState<Home> {
         loading: () => const Loading(),
       ),
       bottomNavigationBar: BottomAppBar(
-        color: Colors.brown,
+        color: primaryColor,
         child: ElevatedButton.icon(
           onPressed: () {
             Navigator.pushNamed(context, '/camera');

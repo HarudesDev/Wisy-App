@@ -7,6 +7,12 @@ const textInputDecoration = InputDecoration(
     borderSide: BorderSide(color: Colors.white, width: 2.0),
   ),
   focusedBorder: OutlineInputBorder(
-    borderSide: BorderSide(color: Colors.pink, width: 2.0),
+    borderSide: BorderSide(color: buttonColor, width: 2.0),
   ),
 );
+
+const primaryColor = Color.fromRGBO(33, 52, 85, 1);
+
+const backgroundColor = Color.fromRGBO(164, 137, 110, 1);
+
+const buttonColor = Color.fromRGBO(93, 103, 79, 1);
