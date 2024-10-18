@@ -12,7 +12,20 @@
           "package_name": "com.example.wisy"
         }
       },
-      "oauth_client": [],
+      "oauth_client": [
+        {
+          "client_id": "925134225529-citsn07r9jhf0688mf9l4u0eshkr9t8k.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.wisy",
+            "certificate_hash": "9ad6c12c3761798c301abe0e61ec0244a0dc39e8"
+          }
+        },
+        {
+          "client_id": "925134225529-0044iqui5ge676qjsf0fm69e2gut05lp.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
       "api_key": [
         {
           "current_key": "AIzaSyDlm1if45RaxwskWsPBXLZSa2FYwFUHhgw"
@@ -20,7 +33,12 @@
       ],
       "services": {
         "appinvite_service": {
-          "other_platform_oauth_client": []
+          "other_platform_oauth_client": [
+            {
+              "client_id": "925134225529-0044iqui5ge676qjsf0fm69e2gut05lp.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
         }
       }
     }
