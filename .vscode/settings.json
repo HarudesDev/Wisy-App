@@ -1,11 +1,13 @@
 {
-  "dart.flutterSdkPath": ".fvm/versions/3.19.6",
+  "dart.flutterSdkPath": ".fvm/versions/3.24.0",
   "cSpell.words": [
     "appspot",
+    "ARGB",
     "camerawesome",
     "cupertino",
     "LTRB",
     "nodoc",
+    "RGBO",
     "Schyler",
     "spinkit",
     "wisy"
