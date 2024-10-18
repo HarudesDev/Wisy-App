@@ -47,18 +47,18 @@ class _Camera2State extends ConsumerState<Camera> {
       color: Colors.white,
       child: Stack(
         children: [
-          // CameraAwesomeBuilder.awesome(
-          //   saveConfig: SaveConfig.photo(
-          //     pathBuilder: () =>
-          //         ref.read(cameraControllerProvider.notifier).getPath(),
-          //   ),
-          //   enablePhysicalButton: true,
-          //   aspectRatio: CameraAspectRatios.ratio_16_9,
-          //   previewFit: CameraPreviewFit.fitWidth,
-          //   onMediaTap: (mediaCapture) => ref
-          //       .read(cameraControllerProvider.notifier)
-          //       .uploadPhoto(mediaCapture),
-          // ),
+          CameraAwesomeBuilder.awesome(
+            saveConfig: SaveConfig.photo(
+              pathBuilder: () =>
+                  ref.read(cameraControllerProvider.notifier).getPath(),
+            ),
+            enablePhysicalButton: true,
+            aspectRatio: CameraAspectRatios.ratio_16_9,
+            previewFit: CameraPreviewFit.fitWidth,
+            onMediaTap: (mediaCapture) => ref
+                .read(cameraControllerProvider.notifier)
+                .uploadPhoto(mediaCapture),
+          ),
           if (state.isLoading)
             const Opacity(
               opacity: 0.4,
@@ -93,29 +93,29 @@ class CameraController extends _$CameraController {
   }
 
   void uploadPhoto(MediaCapture mediaCapture) async {
-    // final firebaseStorage = ref.read(firebaseStorageRepository);
-    // final firebaseFirestore = ref.read(firebaseFirestoreRepository);
-    // final firebaseAuth = ref.read(firebaseAuthRepositoryProvider);
-    // final path = mediaCapture.filePath;
-    // final file = File(mediaCapture.filePath);
-    // final fileName =
-    //     path.substring(path.lastIndexOf('/') + 1, path.lastIndexOf('.') - 1);
-    // final uid = firebaseAuth.getID()!; // TODO:Pendiente de revisión
+    final firebaseStorage = ref.read(firebaseStorageRepository);
+    final firebaseFirestore = ref.read(firebaseFirestoreRepository);
+    final firebaseAuth = ref.read(firebaseAuthRepositoryProvider);
+    final path = mediaCapture.filePath;
+    final file = File(mediaCapture.filePath);
+    final fileName =
+        path.substring(path.lastIndexOf('/') + 1, path.lastIndexOf('.') - 1);
+    final uid = firebaseAuth.getID()!; // TODO:Pendiente de revisión
 
-    // state = const AsyncLoading();
+    state = const AsyncLoading();
 
-    // final uploadTask =
-    //     await firebaseStorage.uploadPhotoToStorage(uid, fileName, file);
+    final uploadTask =
+        await firebaseStorage.uploadPhotoToStorage(uid, fileName, file);
 
-    // state = await AsyncValue.guard(() => uploadTask.then((upload) async {
-    //       if (upload.state == TaskState.success) {
-    //         final url = await upload.ref.getDownloadURL();
-    //         final photo = Photo.now(url, fileName);
-    //         await firebaseFirestore.uploadPhotoToFirestore(uid, photo);
-    //         const SnackBar snackBar =
-    //             SnackBar(content: Text("Foto subida exitosamente"));
-    //         snackbarKey.currentState?.showSnackBar(snackBar);
-    //       }
-    //     }));
+    state = await AsyncValue.guard(() => uploadTask.then((upload) async {
+          if (upload.state == TaskState.success) {
+            final url = await upload.ref.getDownloadURL();
+            final photo = Photo.now(url, fileName);
+            await firebaseFirestore.uploadPhotoToFirestore(uid, photo);
+            const SnackBar snackBar =
+                SnackBar(content: Text("Foto subida exitosamente"));
+            snackbarKey.currentState?.showSnackBar(snackBar);
+          }
+        }));
   }
 }
