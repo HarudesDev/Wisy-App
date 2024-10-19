@@ -169,7 +169,9 @@ class _LoginState extends ConsumerState<Login> {
                       SignInButton(
                         Buttons.google,
                         text: "Ingresar con Google",
-                        onPressed: () async {},
+                        onPressed: () async {
+                          ref.read(loginControllerProvider.notifier).signInWithGoogle();
+                        },
                       ),
                       Text(
                         state.error != null ? state.error.toString() : "",
@@ -206,11 +208,11 @@ class LoginController extends _$LoginController {
         () => authRepository.signInWithEmailAndPassword(email, password));
   }
 
-  /*Future<void> signInWithGoogle() async {
+  Future<void> signInWithGoogle() async {
     final authRepository = ref.read(firebaseAuthRepositoryProvider);
 
     final userCredential = await authRepository.signInWithGoogle();
 
     log(userCredential);
-  }*/
+  }
 }

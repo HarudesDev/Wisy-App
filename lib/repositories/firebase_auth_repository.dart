@@ -1,6 +1,6 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-//import 'package:google_sign_in/google_sign_in.dart';
+import 'package:google_sign_in/google_sign_in.dart';
 
 class FirebaseAuthRepository {
   FirebaseAuth firebaseAuth;
@@ -34,7 +34,7 @@ class FirebaseAuthRepository {
     }
   }
 
-  /*Future signInWithGoogle() async {
+  Future signInWithGoogle() async {
     try {
       final googleUser = await GoogleSignIn().signIn();
 
@@ -49,7 +49,7 @@ class FirebaseAuthRepository {
     } catch (e) {
       rethrow;
     }
-  }*/
+  }
 
   String? getID() => firebaseAuth.currentUser?.uid;
 }
