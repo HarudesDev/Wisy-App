@@ -9,7 +9,6 @@ part 'photos_provider.g.dart';
 Stream<List<Photo>> photos(PhotosRef ref) {
   final storage = ref.watch(firestoreProvider);
   final authService = ref.watch(firebaseAuthRepositoryProvider);
-  //ref.watch(authProvider);
   return storage
       .collection('users')
       .doc(authService.getID())

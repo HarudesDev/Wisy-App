@@ -3,6 +3,7 @@ import 'dart:developer';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:wisy/repositories/firebase_auth_repository.dart';
+import 'package:wisy/shared/exceptions.dart';
 import 'package:wisy/shared/style.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:sign_in_button/sign_in_button.dart';
@@ -31,9 +32,16 @@ class _LoginState extends ConsumerState<Login> {
       loginControllerProvider,
       (_, state) => state.whenOrNull(
         error: (error, _) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text(error.toString())),
-          );
+          if (error is GenericException) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(content: Text(error.message)),
+            );
+          } else {
+            ScaffoldMessenger.of(context).showSnackBar(
+              const SnackBar(
+                  content: Text('Sucedió un error durante el proceso')),
+            );
+          }
         },
         data: (data) {
           ScaffoldMessenger.of(context).showSnackBar(
@@ -170,7 +178,9 @@ class _LoginState extends ConsumerState<Login> {
                         Buttons.google,
                         text: "Ingresar con Google",
                         onPressed: () async {
-                          ref.read(loginControllerProvider.notifier).signInWithGoogle();
+                          ref
+                              .read(loginControllerProvider.notifier)
+                              .signInWithGoogle();
                         },
                       ),
                       Text(
@@ -211,8 +221,9 @@ class LoginController extends _$LoginController {
   Future<void> signInWithGoogle() async {
     final authRepository = ref.read(firebaseAuthRepositoryProvider);
 
-    final userCredential = await authRepository.signInWithGoogle();
+    final userCredential =
+        await AsyncValue.guard(() => authRepository.signInWithGoogle());
 
-    log(userCredential);
+    log(userCredential.toString());
   }
 }

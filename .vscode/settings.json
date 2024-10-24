@@ -5,11 +5,30 @@
     "ARGB",
     "camerawesome",
     "cupertino",
+    "firestore",
     "LTRB",
     "nodoc",
     "RGBO",
+    "riverpod",
     "Schyler",
     "spinkit",
     "wisy"
-  ]
+  ],
+  "[dart]": {
+    "editor.codeActionsOnSave": {
+      "source.fixAll": "always"
+    },
+    "editor.rulers": [
+      80
+    ],
+  },
+  "editor.formatOnSave": true,
+  "editor.stickyScroll.enabled": true,
+  "editor.bracketPairColorization.enabled": true,
+  "explorer.fileNesting.patterns": {
+    "*.dart": "${capture}.g.dart, ${capture}.freezed.dart"
+  },
+  "explorer.fileNesting.enabled": true,
+  "explorer.fileNesting.expand": false,
+  "dart.previewFlutterUiGuides": true
 }

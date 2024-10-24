@@ -1,5 +1,6 @@
 enum GenericExceptionTypes {
-  unknown;
+  unknown,
+  loginError,
 }
 
 class GenericException implements Exception {

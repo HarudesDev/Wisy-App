@@ -1,6 +1,7 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_sign_in/google_sign_in.dart';
+import 'package:wisy/shared/exceptions.dart';
 
 class FirebaseAuthRepository {
   FirebaseAuth firebaseAuth;
@@ -47,7 +48,8 @@ class FirebaseAuthRepository {
 
       return await firebaseAuth.signInWithCredential(credential);
     } catch (e) {
-      rethrow;
+      final exception = GenericException(message: "Error durante el login", error: e, type: GenericExceptionTypes.loginError);
+      throw exception;
     }
   }
 

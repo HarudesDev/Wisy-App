@@ -1,6 +1,8 @@
 import 'package:extended_image/extended_image.dart';
+import 'package:intl/intl.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:wisy/shared/exceptions.dart';
 import 'package:wisy/shared/loading.dart';
 import 'package:wisy/providers/photos_provider.dart';
 import 'package:wisy/repositories/firebase_auth_repository.dart';
@@ -46,7 +48,7 @@ class _HomeState extends ConsumerState<Home> {
           itemCount: photos.length,
           itemBuilder: (context, index) {
             final photo = photos[index];
-            DateTime date = photo.dateTime;
+            final date = photo.dateTime;
             return Card(
               margin: const EdgeInsets.fromLTRB(20.0, 6.0, 20.0, 0.0),
               child: Padding(
@@ -90,7 +92,7 @@ class _HomeState extends ConsumerState<Home> {
                       child: Padding(
                         padding: const EdgeInsets.all(8.0),
                         child: Text(
-                          'Foto tomada el: \n ${date.toString()}',
+                          'Foto tomada el: \n ${DateFormat('yyyy-MM-dd').format(date)} a las ${DateFormat('H:mm').format(date)}',
                           overflow: TextOverflow.ellipsis,
                           maxLines: 2,
                         ),
@@ -113,13 +115,31 @@ class _HomeState extends ConsumerState<Home> {
             );
           },
         ),
-        error: (error, stack) => Center(
-          child: ElevatedButton(
-              onPressed: () {
-                ref.invalidate(photosProvider);
-              },
-              child: const Text("Refrescar")),
-        ),
+        error: (error, stack) {
+          error as GenericException;
+          return Center(
+            child: Column(
+              children: [
+                Padding(
+                  padding: const EdgeInsets.all(10.0),
+                  child: Text(
+                    error.message,
+                    style: const TextStyle(
+                      color: Colors.red,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                ),
+                ElevatedButton(
+                  onPressed: () {
+                    ref.invalidate(photosProvider);
+                  },
+                  child: const Text("Refrescar"),
+                ),
+              ],
+            ),
+          );
+        },
         loading: () => const Loading(),
       ),
       bottomNavigationBar: BottomAppBar(
